@@ -1,0 +1,42 @@
+from bs4 import BeautifulSoup
+import requests
+from urllib.parse import urlparse
+
+# Вставляем любую ссылку с сайта tass.ru
+
+url = 'https://tass.ru/politika/23903953'
+page = requests.get(url)
+domain = urlparse(url).netloc
+
+soup = BeautifulSoup(page.text, 'html.parser')
+
+# Находим все ссылки, содержащие rel='nofollow' — это часто используется для внешних ссылок на tass.ru
+
+external_links = soup.find_all('a', rel='nofollow')
+
+# Отфильтровываем только те ссылки, которые:
+# 1) имеют href
+# 2) имеют непустой домен (то есть не являются относительными)
+# 3) ведут на другой домен, который отличается от tass.ru
+
+filtered_links = [
+    a for a in external_links
+    if 'href' in a.attrs
+    and urlparse(a['href']).netloc  # исключаем относительные ссылки
+    and domain not in urlparse(a['href']).netloc
+]
+
+# Пользователь выбирает: вывести ссылки в консоль или сохранить их в файл
+
+choice = input("Что вы хотите сделать?\n"
+               "1 - Вывести ссылки в консоль\n"
+               "2 - Сохранить ссылки в файл\n"
+               "Введите 1 или 2: ")
+
+if choice == '1':
+    for link in filtered_links:
+        print(link['href'])
+else:
+    with open('external_links.txt', 'w', encoding='utf-8') as f:
+        for link in filtered_links:
+            f.write(link['href'] + '\n')
