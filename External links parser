@@ -1,9 +1,12 @@
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urljoin
+# Получаем URL из аргументов
+url = args.url
 
-# Загружаем URL той страницы, которую хотим распарсить
-url = "https://tass.ru/mezhdunarodnaya-panorama/23925803"
+# Устанавливаем заголовки, чтобы сайт не блокировал скрипт
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/120.0.0.0 Safari/537.36"
+}
 
 # Узнаем домен сайта, чтобы в дальнейшем отфильтровать по нему ненужные ссылки
 domain = urlparse(url).netloc
